@@ -4,3 +4,20 @@
   border-radius: 50%;
   display: inline-block;
 }
+
+#chart-container {
+  padding-top: 15px;
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+.height{
+  height: 68px;
+  width: 100%;
+}
+.checkArea{
+  padding-left: 30%;
+  padding-top: 12%;
+}
+
+
