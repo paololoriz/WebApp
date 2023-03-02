@@ -6,6 +6,8 @@ import { MatToolbarModule} from "@angular/material/toolbar";
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {HttpClient, HttpClientModule} from "@angular/common/http";
+import { ChartComponentComponent } from './chart-component/chart-component.component';
 
 
 export function chartModule(): any {
@@ -14,10 +16,12 @@ export function chartModule(): any {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ChartComponentComponent
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     BrowserAnimationsModule,
     NgxEchartsModule.forRoot({
       echarts : ()=> import('echarts')
