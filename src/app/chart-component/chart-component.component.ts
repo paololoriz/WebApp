@@ -1,4 +1,4 @@
-import { Component, OnInit,ViewChild  } from '@angular/core';
+import { Component, OnInit,ViewChildren  } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartEvent, ChartType } from 'chart.js';
 import { default as Annotation } from 'chartjs-plugin-annotation';
@@ -14,6 +14,8 @@ import {WebSocketSubject} from "rxjs/internal/observable/dom/WebSocketSubject";
 export class ChartComponentComponent implements OnInit {
   private socket$ : WebSocketSubject<any>
 
+  public lineChartType: ChartType = 'line';
+  @ViewChildren(BaseChartDirective) charts?: BaseChartDirective;
   constructor() {
     Chart.register(Annotation);
     //this.socket$ = new WebSocketSubject("ws://localhost:8081");
@@ -39,7 +41,8 @@ export class ChartComponentComponent implements OnInit {
             this.lineChartData1.datasets[0].data.splice(1,1);
             this.lineChartData1?.labels?.splice(1,1);
           }
-          this.chart1?.update();
+          // @ts-ignore
+          this.charts[0]?.update();
 
           this.lineChartData2.datasets[0].data.push(msg.data[1]);
           this.lineChartData2?.labels?.push(Date.now().toString());
@@ -47,14 +50,17 @@ export class ChartComponentComponent implements OnInit {
             this.lineChartData2.datasets[0].data.shift();
             this.lineChartData2?.labels?.splice(1,1);
           }
-          this.chart2?.update();
+          // @ts-ignore
+          this.charts[1]?.update();
 
           this.lineChartData3.datasets[0].data.push(msg.data[2]);
           this.lineChartData3?.labels?.push(Date.now().toString());
           if(this.lineChartData2.datasets[0].data.length > 300){
             this.lineChartData3.datasets[0].data.splice(1,1);
-            this.lineChartData3?.labels?.splice(1,1);       }
-          this.chart3?.update();
+            this.lineChartData3?.labels?.splice(1,1);
+          }
+          // @ts-ignore
+          this.charts[2]?.update();
 
           this.lineChartData4.datasets[0].data.push(msg.data[3]);
           this.lineChartData4?.labels?.push(Date.now().toString());
@@ -62,11 +68,11 @@ export class ChartComponentComponent implements OnInit {
             this.lineChartData4.datasets[0].data.splice(1,1);
             this.lineChartData4?.labels?.splice(1,1);
           }
-          this.chart4?.update();
+          // @ts-ignore
+          this.charts[3]?.update();
         },
         error: (error) => {
           console.log(error) },    // errorHandler
-  //{"type":"eeg","data":[-13.703383,8.95175,42.080486,-35.08723]}
       }
     );
   }
@@ -163,15 +169,13 @@ export class ChartComponentComponent implements OnInit {
     }
   };
 
-  public lineChartType: ChartType = 'line';
-  @ViewChild(BaseChartDirective) chart1?: BaseChartDirective;
-  @ViewChild(BaseChartDirective) chart2?: BaseChartDirective;
-  @ViewChild(BaseChartDirective) chart3?: BaseChartDirective;
-  @ViewChild(BaseChartDirective) chart4?: BaseChartDirective;
 
-  public hideOne(): void {
-    const isHidden = this.chart1?.isDatasetHidden(1);
-    this.chart1?.hideDataset(1, !isHidden);
+
+  public hideOne(): void {          // @ts-ignore
+
+    const isHidden = this.charts[0]?.isDatasetHidden(1);          // @ts-ignore
+
+    this.charts[0]?.hideDataset(1, !isHidden);
   }
   public pushOne(): void {
     this.lineChartData1.datasets.forEach((x, i) => {
@@ -179,8 +183,9 @@ export class ChartComponentComponent implements OnInit {
       x.data.push(num);
     });
     this.lineChartData1?.labels?.push(`Label ${ this.lineChartData1.labels.length }`);
+    // @ts-ignore
 
-    this.chart1?.update();
+    this.charts[0]?.update();
   }
 
 }
