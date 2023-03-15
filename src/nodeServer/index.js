@@ -4,7 +4,7 @@ const WebSocket = require('ws');
 
 // Configurazione del WebSocket server
 const wsServer = new WebSocket.Server({ port: 8081 });
-
+var array = [];
 // Gestione delle connessioni WebSocket
 wsServer.on('connection', (socket) => {
   console.log('Client connesso');
@@ -13,7 +13,6 @@ wsServer.on('connection', (socket) => {
   server.on('message', (msg, rinfo) => {
     console.log(`Messaggio ricevuto: ${msg} da ${rinfo.address}:${rinfo.port}`);
     socket.send(msg);
-    console.log(msg)
     console.log(`Dati inviati: ${msg.toJSON()}`);
 
   });
