@@ -1,8 +1,4 @@
 import {Component} from '@angular/core';
-import {io} from 'socket.io-client';
-import {WebSocketSubject} from "rxjs/internal/observable/dom/WebSocketSubject";
-import {webSocket} from "rxjs/webSocket";
-import {concatAll, map} from 'rxjs/operators';
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 
