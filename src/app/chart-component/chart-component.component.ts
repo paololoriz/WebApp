@@ -12,14 +12,29 @@ import {WebSocketSubject} from "rxjs/internal/observable/dom/WebSocketSubject";
   styleUrls: ['./chart-component.component.scss']
 })
 export class ChartComponentComponent implements OnInit {
-  private socket$: WebSocketSubject<any>
+  private socket$: WebSocketSubject<any> | undefined
+  public dataReceived = [];
   private counter = 0;
+  private data : any = {
+    0 : [],
+    1 : [],
+    2 : [],
+    3 : [],
+    'time' : [],
+  }
   public lineChartType: ChartType = 'line';
   @ViewChildren(BaseChartDirective) charts?: BaseChartDirective;
 
   constructor() {
     Chart.register(Annotation);
     //this.socket$ = new WebSocketSubject("ws://localhost:8081");
+
+  }
+
+  ngOnInit() {
+  }
+
+  createSocket(){
     this.socket$ = webSocket({
       url: 'ws://localhost:8081',
       deserializer: (e) => e.data.text()
@@ -32,25 +47,30 @@ export class ChartComponentComponent implements OnInit {
           console.log('complete')
         },
         next: (data: any) => {
-          //console.log('Dati ricevuti:');
           var msg = JSON.parse(data);
-          //console.log(msg)
-          this.counter++;
-          // console.log(msg.data[0]);
-          // console.log(Date.now().toString());
+          this.data["0"].push(msg.data[0]);
+          this.data["1"].push(msg.data[1]);
+          this.data["2"].push(msg.data[2]);
+          this.data["3"].push(msg.data[3]);
+          this.data['time'].push(Date.now().toString())
+          this.counter ++;
+
           if(this.counter === 100){
-            this.updateCharts(msg);
+            this.updateCharts(this.data);
+            this.data["0"] = [];
+            this.data["1"] = [];
+            this.data["2"] = [];
+            this.data["3"] = [];
+            this.data['time'] = [];
+
             this.counter = 0;
           }
         },
         error: (error) => {
           console.log(error)
-        },    // errorHandler
+        },
       }
     );
-  }
-
-  ngOnInit(): void {
   }
 
 
@@ -143,60 +163,42 @@ export class ChartComponentComponent implements OnInit {
     }
   };
 
-  public updateCharts(msg : any){
-    this.lineChartData1.datasets[0].data.push(msg.data[0]);
-    this.lineChartData1?.labels?.push(Date.now().toString());
-    if (this.lineChartData1.datasets[0].data.length > 80) {
-      this.lineChartData1.datasets[0].data.shift();
-      this.lineChartData1?.labels?.shift();
-    }
+  public updateCharts(valueData : any){
+    this.lineChartData1.datasets[0].data = valueData['0'];
+    this.lineChartData1.labels = valueData['time'] ;
+    // if (this.lineChartData1.datasets[0].data.length > 256) {
+    //   this.lineChartData1.datasets[0].data.shift();
+    //   this.lineChartData1?.labels?.shift();
+    // }
     // @ts-ignore
     this.charts._results[0].update();
 
-    this.lineChartData2.datasets[0].data.push(msg.data[1]);
-    this.lineChartData2?.labels?.push(Date.now().toString());
-    if (this.lineChartData2.datasets[0].data.length > 80) {
-      this.lineChartData2.datasets[0].data.shift();
-      this.lineChartData2?.labels?.shift();
-    }
+    this.lineChartData2.datasets[0].data = valueData['1'];
+    this.lineChartData2.labels = valueData['time'];
+    // if (this.lineChartData2.datasets[0].data.length > 256) {
+    //   this.lineChartData2.datasets[0].data.shift();
+    //   this.lineChartData2?.labels?.shift();
+    // }
     // @ts-ignore
     this.charts._results[1].update();
 
-    this.lineChartData3.datasets[0].data.push(msg.data[2]);
-    this.lineChartData3?.labels?.push(Date.now().toString());
-    if (this.lineChartData3.datasets[0].data.length > 80) {
-      this.lineChartData3.datasets[0].data.shift();
-      this.lineChartData3?.labels?.shift();
-    }
+    this.lineChartData3.datasets[0].data = valueData['2'];
+    this.lineChartData3.labels = valueData['time'];
+    // if (this.lineChartData3.datasets[0].data.length > 256) {
+    //   this.lineChartData3.datasets[0].data.shift();
+    //   this.lineChartData3?.labels?.shift();
+    // }
     // @ts-ignore
     this.charts._results[2].update();
     console.log(this.charts);
 
-    this.lineChartData4.datasets[0].data.push(msg.data[3]);
-    this.lineChartData4?.labels?.push(Date.now().toString());
-    if (this.lineChartData4.datasets[0].data.length > 80) {
-      this.lineChartData4.datasets[0].data.shift();
-      this.lineChartData4?.labels?.shift();
-    }
+    this.lineChartData4.datasets[0].data= valueData['3'];
+    this.lineChartData4.labels = valueData['time'];
+    // if (this.lineChartData4.datasets[0].data.length > 256) {
+    //   this.lineChartData4.datasets[0].data.shift();
+    //   this.lineChartData4?.labels?.shift();
+    // }
     // @ts-ignore
     this.charts._results[3].update();
   }
-  public hideOne(): void {          // @ts-ignore
-
-    const isHidden = this.charts[0]?.isDatasetHidden(1);          // @ts-ignore
-
-    this.charts[0]?.hideDataset(1, !isHidden);
-  }
-
-  public pushOne(): void {
-    this.lineChartData1.datasets.forEach((x, i) => {
-      const num = 2;
-      x.data.push(num);
-    });
-    this.lineChartData1?.labels?.push(`Label ${this.lineChartData1.labels.length}`);
-    // @ts-ignore
-
-    this.charts[0]?.update();
-  }
-
 }

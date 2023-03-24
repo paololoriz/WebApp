@@ -1,8 +1,7 @@
 import {Component} from '@angular/core';
 import { Chart, registerables } from 'chart.js';
+import axios from 'axios';
 Chart.register(...registerables);
-
-
 
 @Component({
   selector: 'app-root',
@@ -10,8 +9,8 @@ Chart.register(...registerables);
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  //private socket$ = webSocket('ws://localhost:8081');
-
+  public receivedData = [];
+  public badQuality = false;
   public dot_1 : any;
   public dot_2 : any;
   public numOfRed : number = 0;
@@ -22,30 +21,48 @@ export class AppComponent {
 
   }
   ngOnInit(){
-
     this.dot_1 = 'grey';
     this.dot_2 = "green";
-
   };
 
-  async sendToServer(){
+  sendToServer(data : any){
+    try{
+      var url = 'https://api.example.com/classification';
+      axios.post(url, data)
+        .then(res =>{
+          if(res.data === 1){
+            this.dot_1 = 'grey';
+            this.dot_2= 'red';
+            this.numOfRed++;
+          }else{
+            this.numOfRed = 0;
+            this.dot_1 = 'green';
+            this.dot_2 = 'grey';
+          }
+          if(this.numOfRed === 4){
+            alert('Il caschetto non è posizionato nel modo corretto, controllare che tutti gli elettrodi siano correttamente posizionati')
+          }
+        })
+        .catch(error =>{
+          console.log(error)
+        });
+    }catch (e) {
+      console.log(e);
+    }
+    return {};
+  };
+
+  async checkQuality(){
     var data = {};
-    var url = 'www.localhost';
+    var url = 'https://api.example.com/checkQuality';
     const response = await fetch(url)
     var res = await response.json();
-    if(res[0] == 1){
-      this.dot_1 = 'grey';
-      this.dot_2= 'red';
-      this.numOfRed++;
+    if(res ==="bad"){
+      this.badQuality = true;
     }else{
-      this.numOfRed = 0;
-      this.dot_1 = 'green';
-      this.dot_2 = 'grey';
+      setInterval(<any | Function>this.sendToServer({}), 4000)
     }
-    if(this.numOfRed === 5){
-      alert('Si sono ripetute 5 red light')
-    }
-  };
+  }
 
   checkFunction(){
     //DO something...
