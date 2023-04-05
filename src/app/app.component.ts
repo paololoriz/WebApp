@@ -40,7 +40,7 @@ export class AppComponent {
             this.dot_2 = 'grey';
           }
           if(this.numOfRed === 4){
-            alert('Il caschetto non è posizionato nel modo corretto, controllare che tutti gli elettrodi siano correttamente posizionati')
+            alert('ALLARME!')
           }
         })
         .catch(error =>{
@@ -65,12 +65,21 @@ export class AppComponent {
   }
 
   checkFunction(){
-    //DO something...
     var a = true;
-    if(a){
-      return 'ok'
-    }else{
-      return 'no';
+     var url = 'https://api.example.com/classification';
+      axios.post(url, data)
+        .then(res =>{
+          if(a){
+            return 'ok'
+          }else{
+            return 'no';
+          }
+        })
+        .catch(error =>{
+          console.log(error)
+        });
+    }catch (e) {
+      console.log(e);
     }
   }
 
